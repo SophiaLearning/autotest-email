@@ -40,7 +40,7 @@ module Autotest
       msg = imap.uid_fetch(res, '(UID RFC822.SIZE ENVELOPE BODY[TEXT])')[0]
       body = msg.attr['BODY[TEXT]']
 
-      delete_email(res)
+      delete_email(imap, res)
 
       disconnect(imap)
 
@@ -50,7 +50,7 @@ module Autotest
     def clear_email_by_subject(subject)
       imap = connect
       imap.uid_search(['SUBJECT', subject]).each do |message_uid|
-        delete_email(message_uid)
+        delete_email(imap, message_uid)
       end
       disconnect(imap)
     end
@@ -80,7 +80,7 @@ module Autotest
 
     private
 
-    def delete_email(message_uid)
+    def delete_email(imap, message_uid)
       imap.uid_store(message_uid, "+FLAGS", [:Deleted])
       imap.uid_copy(message_uid, "[Gmail]/Trash")
     end
