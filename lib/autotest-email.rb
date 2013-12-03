@@ -1,7 +1,5 @@
 require 'autotest-email/version'
-require 'rmail'
 require 'net/imap'
-require 'net/smtp'
 
 module Autotest
 
@@ -55,29 +53,6 @@ module Autotest
       disconnect(imap)
     end
 
-    def send_exception_email(options={})
-      file_path = options[:file_path].nil? ? Email.file_path : options[:file_path]
-
-      SendMail::send_mail(
-        :to => options[:to].nil? ? Email.to : options[:to],
-        :subject => options[:subject].nil? ? Email.subject : options[:subject],
-        :reply_to => options[:reply_to].nil? ? Email.reply_to : options[:replay_to],
-        :body => options[:body].nil? ? Email.body : options[:body],
-        :options => {
-          :priority => 2,
-          :attachments_transfer_encoding => :quoted_printable
-        },
-        :attachments => [
-          {
-            :filename => options[:file_name].nil? ? Email.file_name : options[:file_name],
-            :mime_type => 'image/png',
-            :content => File.open(file_path) {|file| file.sysread(File.size(file))},
-            :transfer_encoding => :base64
-          }
-        ]
-      )
-    end
-
     private
 
     def delete_email(imap, message_uid)
@@ -98,9 +73,6 @@ module Autotest
     end
 
   end
-
-  autoload :SendMail,  'autotest-email/send_mail'
-
 end
 
 Autotest::Email.configure do |config|
@@ -110,13 +82,4 @@ Autotest::Email.configure do |config|
   config.user_name  = 'example@gmail.com'
   config.password   = 'password'
   config.enable_ssl = true
-
-  #for send email
-  config.from       = 'example@gmail.com'
-  config.to         = 'example@gmail.com'
-  config.reply_to   = 'noreplay@example.com'
-  config.subject    = nil
-  config.body       = nil
-  config.file_name  = nil
-  config.file_path  = nil
 end
