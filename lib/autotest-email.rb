@@ -63,7 +63,7 @@ module Autotest
     def connect
       Net::IMAP.new(Email.address, Email.port, Email.enable_ssl).tap do |imap|
         imap.login(Email.user_name, Email.password)
-        imap.select('[Gmail]/All Mail')
+        imap.select('[Gmail]/Sent Mail')
       end
     end
 
